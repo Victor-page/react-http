@@ -9,13 +9,6 @@ function App() {
   const [isLoading, setIsloading] = useState(false);
   const [error, setError] = useState(null);
 
-  const transformMovies = (movieData) => ({
-    id: movieData.episode_id,
-    title: movieData.title,
-    openingText: movieData.opening_crawl,
-    releaseDate: movieData.release_date,
-  });
-
   const url =
     'https://react-http-7aca5-default-rtdb.firebaseio.com/movies.json';
 
@@ -29,10 +22,18 @@ function App() {
         throw new Error(`Sth went wrong! ${response.status}`);
       }
       const data = await response.json();
-      console.log(data);
 
-      const transformedMovies = data.results.map(transformMovies);
-      setMovies(transformedMovies);
+      const loadedMovies = [];
+
+      for (const id in data) {
+        if (Object.hasOwnProperty.call(data, id)) {
+          const { title, openingText, releaseDate } = data[id];
+
+          loadedMovies.push({ id, title, openingText, releaseDate });
+        }
+      }
+
+      setMovies(loadedMovies);
     } catch (error) {
       console.log(error.message);
       setError(error.message);
